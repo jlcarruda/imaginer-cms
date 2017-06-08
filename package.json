@@ -1,0 +1,18 @@
+{
+  "name": "cms-nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "monitor": "nodemon app.js"
+  },
+  "author": "João Lucas de Carvalho Arruda",
+  "license": "ISC",
+  "dependencies": {
+    "consign": "^0.1.5",
+    "ejs": "^2.5.6",
+    "express": "^4.15.3",
+    "glob": "^7.1.2"
+  }
+}

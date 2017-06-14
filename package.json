@@ -10,9 +10,14 @@
   "author": "João Lucas de Carvalho Arruda",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.5.0",
+    "body-parser": "^1.17.2",
     "consign": "^0.1.5",
     "ejs": "^2.5.6",
     "express": "^4.15.3",
-    "glob": "^7.1.2"
+    "glob": "^7.1.2",
+    "mozart": "^0.1.0",
+    "mysql2": "^1.3.4",
+    "sequelize": "^4.0.0"
   }
 }

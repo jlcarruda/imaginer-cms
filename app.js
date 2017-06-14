@@ -1,5 +1,12 @@
 var server = require('./config/server');
 
-server.listen(3000, function(){
-    console.log('Servidor UP!');
+server.then(function(webserv) {
+    if(webserv){
+        webserv.listen(3000, function(){
+            console.log('Servidor Up');
+        });
+    }
+}).caught(e=>{
+    console.log(e.message);
+    throw e;
 });

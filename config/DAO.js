@@ -1,31 +1,40 @@
 // Data Access Object. Aqui será criada a parte de conexão com Banco de Dados
 var Promise = require('bluebird');
 var ctor = require('mozart');
+
+// Classe do DAO criada pelo Mozart
 var cDAO = ctor(function(proto, _, _protected, __, __private){
 
-    __private.DB = null;
-    __private.instance = null;
+    proto.foo = 'bar';
 
+    // Função para começar LazyLoad
     proto.startInitialization = function(conf, Sequelize){
+        var self = this;
+        Sequelize.UUID = Sequelize.CHAR(22).BINARY; // Atribuição de novo tipo de dado no Sequelize
         return new Promise(function(resolve, reject){
 
-            __(this).DB = new Sequelize(conf.dbname, conf.user, conf.pass, {
+            _(self).Sequelize = Sequelize;
+
+            _(self).DB = new Sequelize(conf.dbname, conf.user, conf.pass, {
                 host: conf.host,
                 dialect: conf.dialect
             });
 
-            __(this).DB.authenticate().then(function (){
-                resolve(this);
+            _(self).DB.authenticate().then(function (){
+                resolve();
             });
-        })
+
+        });
     }
 
-    proto.sync = function(){
-        //TODO: Implementar Sync, encapsulando o Sync do Sequelize
+    this.addGetters('DB', 'Sequelize');
 
+    proto.sync = function(){
+        return _(this).DB.sync();
     }
 
 });
+
 
 
 module.exports.init = function(conf, Sequelize){
@@ -34,8 +43,8 @@ module.exports.init = function(conf, Sequelize){
 
         try {
             aux = new cDAO();
-            aux.startInitialization(conf, Sequelize).then(function(initializedObj){
-                resolve(initializedObj);
+            aux.startInitialization(conf, Sequelize).then(function(){
+                resolve(aux);
             });
         } catch (e) {
             reject(e);

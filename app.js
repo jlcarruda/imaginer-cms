@@ -1,3 +1,8 @@
+global.coreRequest = function(name){
+
+    return require(__dirname + '/' + name);
+}
+
 var server = require('./config/server');
 
 server.then(function(webserv) {

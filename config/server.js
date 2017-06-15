@@ -9,7 +9,7 @@ var app = express();
 
 /*
     MODULO DO SERVER
-    
+
     Modulo do servidor faz uso de Promises para carregar de forma síncrona todos os
     requisitos assíncronos do sistema (autenticação do banco de dados por exemplo);
 */
@@ -30,19 +30,37 @@ module.exports = new Promise(function(resolve, reject){
     //Inicializa o DAO e Resolve ou rejeita a Promise principal
     DAO.init(app.servConfig.database, sequelize).then(function(objDAO){
         if(objDAO){
+
             app.DAO = objDAO;
         } else {
             reject('failed: objDAO is Undefined');
         }
     }).then(function(){
+        // Define os Models e coloca-os no App
+        var models = require('./models.js');
+
+    }).then(function(){
         //Middlewares
         app.use(bodyParser.urlencoded({extended: true}));
 
+    }).then(function(){
         // Registra todas as rotas no namespace do servidor
+        // .then('core/models')
         consign().include('core/routes')
-        .then('core/models')
+        .then('core/vendors/parents')
         .into(app);
 
+        // Renomeia namespaces desnecessariamente longos
+        app.core.parents = app.core.vendors.parents
+        delete app.config;
+        delete app.core.vendors.parents;
+
+        consign().include('config/models.js')
+        .into(app);
+
+        return app.DAO.sync();
+    }).then(function(){
+        
         resolve(app);
     });
 

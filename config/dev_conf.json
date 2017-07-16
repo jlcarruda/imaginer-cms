@@ -6,5 +6,6 @@
         "user": "root",
         "pass": "",
         "dbname": "dev_imagic"
-    }
+    },
+    "cookieSecret": "9ad8a21f80d9e6f81adae7a1552deb130a938c4b"
 }

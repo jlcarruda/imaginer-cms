@@ -9,6 +9,6 @@ module.exports = function(serv){
     .into(serv);
 
     // Renomeia namespaces desnecessariamente longos
-    serv.DAO.models = serv.core.models;
-    delete serv.core.models;
+    // serv.DAO.models = serv.core.models;
+    // delete serv.core.models;
 }

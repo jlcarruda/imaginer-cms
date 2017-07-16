@@ -4,9 +4,13 @@ var consign = require('consign');
 var bodyParser = require('body-parser');
 var sequelize = require('sequelize');
 var Promise = require('bluebird');
+var session = require('express-session');
+var cookieParser = require('cookie-parser');
+var SequelizeStore = require('connect-session-sequelize')(session.Store);
+var helmet = require('helmet');
+require('colors');
 
 var app = express();
-
 /*
     MODULO DO SERVER
 
@@ -40,14 +44,34 @@ module.exports = new Promise(function(resolve, reject){
         var models = require('./models.js');
 
     }).then(function(){
+
         //Middlewares
+        app.use(helmet({
+            contentSecurityPolice: true,
+            referrerPolicy: true
+        }));
         app.use(bodyParser.urlencoded({extended: true}));
+        app.use(cookieParser());
+
+        // Configura middleware para lidar com sessões de usuário
+        app.use(session({
+            secret: app.servConfig.cookieSecret,
+            cookie: {
+                maxAge: 3600000,
+                httpOnly: true
+            },
+            store: new SequelizeStore({
+                db: app.DAO.getDB()
+            }),
+            proxy: true,
+            resave: false,
+            saveUninitialized: true
+        }))
 
     }).then(function(){
         // Registra todas as rotas no namespace do servidor
         // .then('core/models')
-        consign().include('core/routes')
-        .then('core/vendors/parents')
+        consign().include('core/vendors/parents')
         .into(app);
 
         // Renomeia namespaces desnecessariamente longos
@@ -56,12 +80,15 @@ module.exports = new Promise(function(resolve, reject){
         delete app.core.vendors.parents;
 
         consign().include('config/models.js')
+        .then('core/routes')
         .into(app);
 
+        console.log('\n==> Starting DB Synchronizing'.yellow);
         return app.DAO.sync();
     }).then(function(){
-        
+        global.getServer = function(){
+            return app;
+        }
         resolve(app);
     });
-
 });

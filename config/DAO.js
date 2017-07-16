@@ -20,6 +20,7 @@ var cDAO = ctor(function(proto, _, _protected, __, __private){
                 dialect: conf.dialect
             });
 
+
             _(self).DB.authenticate().then(function (){
                 resolve();
             });

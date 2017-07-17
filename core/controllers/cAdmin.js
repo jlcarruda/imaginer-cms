@@ -1,28 +1,47 @@
 
+var Errors = require('common-errors');
 module.exports = function(models){
     this.models = models;
 
-    this.authenticate = function (req){
+    this.authenticate = function (req, res){
         var User = this.models.user;
         console.log(User);
-        return User.findOne({
+        User.findOne({
             where: {
                 username: req.body.user,
                 password: req.body.password
             }
+        }).then(function(user){
+            if (user){
+                req.session.user = user;
+                req.session.save(function(err){
+                    if(err){
+                        throw new Errors('Error while saving session', err.message)
+                    } else {
+                        // Renderiza a página de dashboard pro admin
+                        res.render('adminDashboard', {viewConfig: {
+                            title: 'Dashboard'
+                        }, userData: user});
+                    }
+                });
+            } else {
+                res.locals.nonAuthorized = true;
+                res.redirect('/admin');
+            }
+
+        }).catch(function(err){
+            throw err;
         });
     }
 
-    this.create_user = function (req){
-        var User = this.models.user;
-        console.log('User', User);
-        return User.create({
-            name: 'admin',
-            username: 'admin',
-            password: 'admin',
+    this.logout = function(req, res) {
+        req.session.destroy(function(err){
+            if(err){
+                throw new Errors('Error while logging out from administration', err.message);
+            } else {
+                res.redirect('/admin');
+            }
         })
-        console.log('\n Usuario Criado \n');
     }
-
     return this;
 }

@@ -8,15 +8,28 @@ var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var SequelizeStore = require('connect-session-sequelize')(session.Store);
 var helmet = require('helmet');
-require('colors');
+var colors = require('colors');
+
+console.log('\n\n\n');
+console.log(colors.yellow('Initializing Server -> %s'), (process.env.NODE_ENV == 'prod') ? 'Production' : 'Development');
+console.log('\n');
 
 var app = express();
+global.getServer = function(){
+    return app;
+}
+
 /*
     MODULO DO SERVER
 
     Modulo do servidor faz uso de Promises para carregar de forma síncrona todos os
     requisitos assíncronos do sistema (autenticação do banco de dados por exemplo);
 */
+
+// Objeto de Erros
+app.errors = {
+    unauthorized = false
+}
 
 module.exports = new Promise(function(resolve, reject){
 
@@ -51,7 +64,7 @@ module.exports = new Promise(function(resolve, reject){
             referrerPolicy: true
         }));
         app.use(bodyParser.urlencoded({extended: true}));
-        app.use(cookieParser());
+        // app.use(cookieParser());
 
         // Configura middleware para lidar com sessões de usuário
         app.use(session({
@@ -65,7 +78,7 @@ module.exports = new Promise(function(resolve, reject){
             }),
             proxy: true,
             resave: false,
-            saveUninitialized: true
+            saveUninitialized: false
         }))
 
     }).then(function(){
@@ -86,9 +99,7 @@ module.exports = new Promise(function(resolve, reject){
         console.log('\n==> Starting DB Synchronizing'.yellow);
         return app.DAO.sync();
     }).then(function(){
-        global.getServer = function(){
-            return app;
-        }
+
         resolve(app);
     });
 });

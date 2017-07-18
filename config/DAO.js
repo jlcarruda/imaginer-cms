@@ -10,7 +10,7 @@ var cDAO = ctor(function(proto, _, _protected, __, __private){
     // Função para começar LazyLoad
     proto.startInitialization = function(conf, Sequelize){
         var self = this;
-        Sequelize.UUID = Sequelize.CHAR(22).BINARY; // Atribuição de novo tipo de dado no Sequelize
+        // Sequelize.UUID = Sequelize.CHAR(22).BINARY; // Atribuição de novo tipo de dado no Sequelize
         return new Promise(function(resolve, reject){
 
             _(self).Sequelize = Sequelize;
@@ -18,6 +18,12 @@ var cDAO = ctor(function(proto, _, _protected, __, __private){
             _(self).DB = new Sequelize(conf.dbname, conf.user, conf.pass, {
                 host: conf.host,
                 dialect: conf.dialect
+            });
+
+            //HACK: Hook permanente para salvar as ids como UUID
+            _(self).DB.addHook('beforeCreate', (obj)=> {
+                const uuid = require('uuid-base62');
+                obj.uuid = uuid.v4();
             });
 
             _(self).DB.authenticate().then(function (){

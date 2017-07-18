@@ -1,15 +1,17 @@
-
+var Crypto = require('crypto');
 var Errors = require('common-errors');
+var colors = require('colors');
 module.exports = function(models){
     this.models = models;
 
     this.authenticate = function (req, res){
         var User = this.models.user;
-        console.log(User);
+        var cryptoConfig = req.app.servConfig.crypto;
+        
         User.findOne({
             where: {
                 username: req.body.user,
-                password: req.body.password
+                password: req.app.encrypt(req.body.password, cryptoConfig.default_salt).toString('hex')
             }
         }).then(function(user){
             if (user){
@@ -19,13 +21,14 @@ module.exports = function(models){
                         throw new Errors('Error while saving session', err.message)
                     } else {
                         // Renderiza a página de dashboard pro admin
+                        res.redirect('/admin');
                         res.render('adminDashboard', {viewConfig: {
                             title: 'Dashboard'
                         }, userData: user});
                     }
                 });
             } else {
-                res.locals.nonAuthorized = true;
+                res.app.errors.unauthorized = true;
                 res.redirect('/admin');
             }
 

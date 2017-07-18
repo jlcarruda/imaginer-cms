@@ -11,25 +11,22 @@ module.exports = function(serv){
 
     // Registra a rota de login do servidor
     serv.get('/admin', function(req, res){
-        //TODO: Se não com sessão aberta, vai para Login. Se sim, vai para dashboard
         if(req.session.user){
-
-            console.log(colors.cyan('Logged User: %s'), req.session.user.username);
 
             res.render('adminDashboard', {viewConfig: {  // Renderiza pagina de dashboard para o admin
                 title: 'Dashboard'
             }, userData: req.session.user});
-
         } else {
+
             var configObj = {viewConfig: viewConfig, err: {
                 unauthorized : false
             }};
-            
 
-            if(res.app.errors){
-                delete res.locals.nonAuthorized;
-                configObj.err.unauthorized = true;
-            }
+            if(res.app.errors.unauthorized) delete res.locals.nonAuthorized ;
+
+            configObj.err.unauthorized = res.app.errors.unauthorized;
+            res.app.errors.unauthorized = false;
+
             res.render('adminLogin', configObj);
         }
     });

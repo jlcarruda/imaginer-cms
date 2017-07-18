@@ -3,11 +3,11 @@ module.exports = function(serv){
     // var cUser = serv.core.parents.ModelConstructor.subclass();  // Criar cUser como subclasse do ModelConstructor;
     var sequelize = serv.DAO.getSequelize();
     var db = serv.DAO.getDB();
-
+    console.log(sequelize.UUIDV4);
     var schema = {
-        id: {
+        uuid: {
             type: sequelize.UUID,
-            primaryKey: true
+            defaultValue: sequelize.UUIDV4
         },
         name: {
             type: sequelize.STRING,
@@ -19,7 +19,7 @@ module.exports = function(serv){
             unique: true
         },
         password: {
-            type: sequelize.STRING,
+            type: sequelize.TEXT,
             allowNull: false
         }
     };

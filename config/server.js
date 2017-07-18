@@ -9,8 +9,13 @@ var cookieParser = require('cookie-parser');
 var SequelizeStore = require('connect-session-sequelize')(session.Store);
 var helmet = require('helmet');
 var colors = require('colors');
+var uuid = require('uuid-base62');
+
+var encrypt = require('../core/vendors/utils/encrypt');
+
 
 console.log('\n\n\n');
+console.log(uuid.v4());
 console.log(colors.yellow('Initializing Server -> %s'), (process.env.NODE_ENV == 'prod') ? 'Production' : 'Development');
 console.log('\n');
 
@@ -28,7 +33,7 @@ global.getServer = function(){
 
 // Objeto de Erros
 app.errors = {
-    unauthorized = false
+    unauthorized : false
 }
 
 module.exports = new Promise(function(resolve, reject){
@@ -41,6 +46,19 @@ module.exports = new Promise(function(resolve, reject){
     // Registra configurações no objeto de Servidor
     var configPath = (process.env.NODE_ENV == 'prod') ? 'prod_conf.json' : 'dev_conf.json';
     app.servConfig = require(__dirname + '/' + configPath);
+
+    //HACK: Adicionando uma função de encriptação e decriptação no Server
+    app.encrypt = function(str, salt){
+        const crypto = require('crypto');
+        var configs = app.servConfig.crypto;
+        var hash = crypto.pbkdf2Sync(str, salt, 10000, 256, 'sha256');
+        return hash;
+    }
+
+    app.compare = function (hash, attempt, salt){
+        const crypto = require('crypto');
+        return hash == crypto.pbkdf2(attempt, salt, 10000, 256, 'sha256');
+    }
 
     var DAO = require(__dirname + '/' + 'DAO.js');
 

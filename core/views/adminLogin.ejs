@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title><% viewConfig.title; %></title>
+        <title><%= viewConfig.title; %></title>
         <link href="/css/admin.css" rel="stylesheet">
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
         <!-- <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script> -->
@@ -10,7 +10,12 @@
         <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
     </head>
     <body>
-        <% if(err.unauthorized) alert('Login Error');%>
+        <% if(err.unauthorized) { %>
+            <!-- UNAUTHORIZED ALERT -->
+            <script type="text/javascript">
+                alert('Login Error');
+            </script>
+        <% } %>
         <!--
         you can substitue the span of reauth email for a input with the email and
         include the remember me checkbox

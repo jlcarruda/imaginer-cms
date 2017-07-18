@@ -7,5 +7,8 @@
         "pass": "",
         "dbname": "dev_imagic"
     },
-    "cookieSecret": "9ad8a21f80d9e6f81adae7a1552deb130a938c4b"
+    "cookieSecret": "9ad8a21f80d9e6f81adae7a1552deb130a938c4b",
+    "crypto": {
+        "default_salt":  "29b574f525895fe03d9591ba1c832734ac90773bd3f09755b1fb89679ffdbc10"
+    }
 }

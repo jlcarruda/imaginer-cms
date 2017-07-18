@@ -11,8 +11,6 @@ var helmet = require('helmet');
 var colors = require('colors');
 var uuid = require('uuid-base62');
 
-var encrypt = require('../core/vendors/utils/encrypt');
-
 
 console.log('\n\n\n');
 console.log(uuid.v4());
